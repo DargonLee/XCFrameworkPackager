@@ -114,6 +114,54 @@ A: 检查目标库是否支持 iOS 15.0+，以及是否有正确的 podspec 文�
 - **性能**：LRU 算法，线程安全
 - **兼容性**：API 类似 NSCache
 
+## GitHub Actions 自动化部署
+
+项目支持使用 GitHub Actions 进行自动化构建和部署：
+
+### 🚀 自动构建
+
+每次推送到 `main` 或 `develop` 分支时，会自动触发构建：
+
+- 自动构建 YYCache XCFramework
+- 上传构建产物到 GitHub Artifacts
+- 保留 30 天供下载
+
+### 🎯 手动触发构建
+
+在 GitHub 仓库的 Actions 页面，可以手动触发构建：
+
+1. 进入 **Actions** 标签页
+2. 选择 **Build XCFramework** 工作流
+3. 点击 **Run workflow**
+4. 输入参数：
+   - Git 仓库地址
+   - Scheme 名称
+   - 库类型（static/dynamic）
+
+### 📦 发布版本
+
+创建 Release 时自动构建并上传 XCFramework：
+
+```bash
+# 创建标签并推送
+git tag v1.0.0
+git push origin v1.0.0
+
+# 或在 GitHub 网页上创建 Release
+```
+
+### 工作流文件
+
+- `.github/workflows/build-xcframework.yml` - 主构建工作流
+- `.github/workflows/release.yml` - 发布工作流
+
+### 构建环境
+
+- **运行环境**：macOS Latest
+- **Xcode**：Latest Stable
+- **CocoaPods**：自动安装最新版本
+- **缓存**：Pod 依赖缓存加速构建
+
 ## 贡献
 
 欢迎提交 Issue 和 Pull Request 来改进这个工具。

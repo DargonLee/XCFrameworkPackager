@@ -1,0 +1,87 @@
+name: Build XCFramework
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      git_repo:
+        description: 'Git repository URL'
+        required: true
+        default: 'https://github.com/ibireme/YYCache.git'
+      scheme_name:
+        description: 'Scheme name'
+        required: true
+        default: 'YYCache'
+      lib_type:
+        description: 'Library type'
+        required: true
+        default: 'static'
+        type: choice
+        options:
+        - static
+        - dynamic
+
+jobs:
+  build:
+    runs-on: macos-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: latest-stable
+        
+    - name: Install CocoaPods
+      run: |
+        sudo gem install cocoapods
+        
+    - name: Cache CocoaPods
+      uses: actions/cache@v3
+      with:
+        path: Pods
+        key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-pods-
+          
+    - name: Make build script executable
+      run: chmod +x build_xcframework.sh
+      
+    - name: Build XCFramework (Manual Trigger)
+      if: github.event_name == 'workflow_dispatch'
+      run: |
+        ./build_xcframework.sh "${{ github.event.inputs.git_repo }}" "${{ github.event.inputs.scheme_name }}" "${{ github.event.inputs.lib_type }}"
+        
+    - name: Build XCFramework (Auto Trigger)
+      if: github.event_name != 'workflow_dispatch'
+      run: |
+        ./build_xcframework.sh "https://github.com/ibireme/YYCache.git" "YYCache" "static"
+        
+    - name: List build output
+      run: |
+        echo "Build completed. Contents of build directory:"
+        ls -la build/
+        if [ -d "build" ]; then
+          find build -name "*.xcframework" -type d
+        fi
+        
+    - name: Upload XCFramework artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: xcframework-${{ github.event.inputs.scheme_name || 'YYCache' }}-${{ github.sha }}
+        path: build/*.xcframework
+        retention-days: 30
+        
+    - name: Create Release (on tag)
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: softprops/action-gh-release@v1
+      with:
+        files: build/*.xcframework
+        generate_release_notes: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

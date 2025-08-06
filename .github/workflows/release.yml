@@ -1,0 +1,105 @@
+name: Release XCFramework
+
+on:
+  release:
+    types: [created]
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Release tag name'
+        required: true
+        default: 'v1.0.0'
+      libraries:
+        description: 'Libraries to build (JSON format)'
+        required: true
+        default: '[{"repo": "https://github.com/ibireme/YYCache.git", "scheme": "YYCache", "type": "static"}]'
+
+jobs:
+  build-and-release:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        include:
+          - repo: "https://github.com/ibireme/YYCache.git"
+            scheme: "YYCache"
+            type: "static"
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: latest-stable
+        
+    - name: Install CocoaPods
+      run: |
+        sudo gem install cocoapods
+        pod --version
+        
+    - name: Cache CocoaPods
+      uses: actions/cache@v3
+      with:
+        path: Pods
+        key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-pods-
+          
+    - name: Make build script executable
+      run: chmod +x build_xcframework.sh
+      
+    - name: Build XCFramework
+      run: |
+        echo "Building ${{ matrix.scheme }} from ${{ matrix.repo }}"
+        ./build_xcframework.sh "${{ matrix.repo }}" "${{ matrix.scheme }}" "${{ matrix.type }}"
+        
+    - name: Verify build output
+      run: |
+        echo "Verifying build output..."
+        ls -la build/
+        if [ -d "build/${{ matrix.scheme }}.xcframework" ]; then
+          echo "✅ ${{ matrix.scheme }}.xcframework created successfully"
+          ls -la "build/${{ matrix.scheme }}.xcframework"
+        else
+          echo "❌ ${{ matrix.scheme }}.xcframework not found"
+          exit 1
+        fi
+        
+    - name: Create ZIP archive
+      run: |
+        cd build
+        zip -r "${{ matrix.scheme }}.xcframework.zip" "${{ matrix.scheme }}.xcframework"
+        echo "Created ZIP: ${{ matrix.scheme }}.xcframework.zip"
+        ls -la *.zip
+        
+    - name: Upload to Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ github.event.inputs.tag_name || github.ref_name }}
+        files: |
+          build/${{ matrix.scheme }}.xcframework.zip
+        name: "XCFramework Release ${{ github.event.inputs.tag_name || github.ref_name }}"
+        body: |
+          ## 📦 XCFramework Release
+          
+          This release contains the following XCFrameworks:
+          
+          - **${{ matrix.scheme }}** (${{ matrix.type }} library)
+            - Source: ${{ matrix.repo }}
+            - Built for iOS 15.0+
+            - Architectures: arm64 (device), arm64 + x86_64 (simulator)
+          
+          ### 使用方法
+          
+          1. 下载对应的 `.xcframework.zip` 文件
+          2. 解压到你的项目中
+          3. 在 Xcode 中添加到 "Frameworks, Libraries, and Embedded Content"
+          
+          ### 构建信息
+          - 构建时间: ${{ github.event.head_commit.timestamp }}
+          - 提交: ${{ github.sha }}
+          - Xcode 版本: Latest Stable
+        generate_release_notes: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
