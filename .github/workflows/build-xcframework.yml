@@ -26,7 +26,7 @@ on:
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: macos-14
     
     steps:
     - name: Checkout repository
@@ -40,9 +40,10 @@ jobs:
     - name: Install CocoaPods
       run: |
         sudo gem install cocoapods
+        pod --version
         
     - name: Cache CocoaPods
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: Pods
         key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
@@ -55,31 +56,38 @@ jobs:
     - name: Build XCFramework (Manual Trigger)
       if: github.event_name == 'workflow_dispatch'
       run: |
+        echo "Building with custom parameters:"
+        echo "Repository: ${{ github.event.inputs.git_repo }}"
+        echo "Scheme: ${{ github.event.inputs.scheme_name }}"
+        echo "Type: ${{ github.event.inputs.lib_type }}"
         ./build_xcframework.sh "${{ github.event.inputs.git_repo }}" "${{ github.event.inputs.scheme_name }}" "${{ github.event.inputs.lib_type }}"
         
     - name: Build XCFramework (Auto Trigger)
       if: github.event_name != 'workflow_dispatch'
       run: |
+        echo "Building default YYCache framework..."
         ./build_xcframework.sh "https://github.com/ibireme/YYCache.git" "YYCache" "static"
         
     - name: List build output
       run: |
         echo "Build completed. Contents of build directory:"
-        ls -la build/
+        ls -la build/ || echo "Build directory not found"
         if [ -d "build" ]; then
-          find build -name "*.xcframework" -type d
+          find build -name "*.xcframework" -type d || echo "No XCFramework found"
         fi
         
     - name: Upload XCFramework artifacts
-      uses: actions/upload-artifact@v3
+      if: success()
+      uses: actions/upload-artifact@v4
       with:
-        name: xcframework-${{ github.event.inputs.scheme_name || 'YYCache' }}-${{ github.sha }}
+        name: xcframework-${{ github.event.inputs.scheme_name || 'YYCache' }}-${{ github.run_number }}
         path: build/*.xcframework
         retention-days: 30
+        if-no-files-found: warn
         
     - name: Create Release (on tag)
-      if: startsWith(github.ref, 'refs/tags/')
-      uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/') && success()
+      uses: softprops/action-gh-release@v2
       with:
         files: build/*.xcframework
         generate_release_notes: true

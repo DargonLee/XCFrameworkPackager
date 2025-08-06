@@ -16,7 +16,7 @@ on:
 
 jobs:
   build-and-release:
-    runs-on: macos-latest
+    runs-on: macos-14
     strategy:
       matrix:
         include:
@@ -39,7 +39,7 @@ jobs:
         pod --version
         
     - name: Cache CocoaPods
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: Pods
         key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
@@ -74,7 +74,7 @@ jobs:
         ls -la *.zip
         
     - name: Upload to Release
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v2
       with:
         tag_name: ${{ github.event.inputs.tag_name || github.ref_name }}
         files: |
