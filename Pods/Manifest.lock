@@ -1,0 +1,16 @@
+PODS:
+  - YYCache (1.0.4)
+
+DEPENDENCIES:
+  - YYCache (from `./LocalPods/YYCache`)
+
+EXTERNAL SOURCES:
+  YYCache:
+    :path: "./LocalPods/YYCache"
+
+SPEC CHECKSUMS:
+  YYCache: 8105b6638f5e849296c71f331ff83891a4942952
+
+PODFILE CHECKSUM: e9ad44f9e485c2cbfded4233d1cdb17fcbfc0039
+
+COCOAPODS: 1.16.2
