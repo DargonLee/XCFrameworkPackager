@@ -18,3 +18,8 @@ post_install do |installer|
     end
   end
 end
+
+#XXX.podspec文件需要添加下面的说明
+#spec.pod_target_xcconfig = {
+#    'BUILD_LIBRARY_FOR_DISTRIBUTION' => 'YES', # keep ABI stable
+#}
