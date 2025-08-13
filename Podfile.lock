@@ -1,16 +1,22 @@
 PODS:
-  - YYCache (1.0.4)
+  - Alamofire (5.10.2)
+  - Moya (15.0.0):
+    - Moya/Core (= 15.0.0)
+  - Moya/Core (15.0.0):
+    - Alamofire (~> 5.0)
 
 DEPENDENCIES:
-  - YYCache (from `./LocalPods/YYCache`)
+  - Moya
 
-EXTERNAL SOURCES:
-  YYCache:
-    :path: "./LocalPods/YYCache"
+SPEC REPOS:
+  trunk:
+    - Alamofire
+    - Moya
 
 SPEC CHECKSUMS:
-  YYCache: 8105b6638f5e849296c71f331ff83891a4942952
+  Alamofire: 7193b3b92c74a07f85569e1a6c4f4237291e7496
+  Moya: 138f0573e53411fb3dc17016add0b748dfbd78ee
 
-PODFILE CHECKSUM: 6cd0f1d046530c4642d3405b46321388a33b3199
+PODFILE CHECKSUM: 8642ba86015d175c306f682b1b65158c74cc30cb
 
 COCOAPODS: 1.16.2

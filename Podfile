@@ -1,3 +1,5 @@
+#source 'https://mirrors.tuna.tsinghua.edu.cn/git/CocoaPods/Specs.git'
+
 platform :ios, '15.0'
 
 target 'XCFrameworkPackager' do
@@ -7,8 +9,10 @@ target 'XCFrameworkPackager' do
 #  pod 'ZLPhotoBrowser', :path => './ZLPhotoBrowser'
 #  pod 'LookinServer', :podspec => './LookinServer/LookinServer.podspec'
 #  pod 'YYCache', :path => './YYCache'
-
-  pod 'YYCache', :path => './LocalPods/YYCache'
+#  pod 'RxSwift', :path => './LocalPods/RxSwift'
+#  pod 'ReactiveSwift', :path => './LocalPods/ReactiveSwift'
+#  pod 'Moya', :path => './LocalPods/Moya'
+  pod 'Moya'
 end
 
 post_install do |installer|

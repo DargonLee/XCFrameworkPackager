@@ -1,2 +1,3 @@
 ${PODS_ROOT}/Target Support Files/Pods-XCFrameworkPackager/Pods-XCFrameworkPackager-frameworks.sh
-${BUILT_PRODUCTS_DIR}/YYCache/YYCache.framework
+${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework
+${BUILT_PRODUCTS_DIR}/Moya/Moya.framework
