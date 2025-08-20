@@ -1,22 +1,18 @@
 PODS:
-  - Alamofire (5.10.2)
-  - Moya (15.0.0):
-    - Moya/Core (= 15.0.0)
-  - Moya/Core (15.0.0):
-    - Alamofire (~> 5.0)
+  - YYImage (1.0.4):
+    - YYImage/Core (= 1.0.4)
+  - YYImage/Core (1.0.4)
 
 DEPENDENCIES:
-  - Moya
+  - YYImage (from `./LocalPods/YYImage`)
 
-SPEC REPOS:
-  trunk:
-    - Alamofire
-    - Moya
+EXTERNAL SOURCES:
+  YYImage:
+    :path: "./LocalPods/YYImage"
 
 SPEC CHECKSUMS:
-  Alamofire: 7193b3b92c74a07f85569e1a6c4f4237291e7496
-  Moya: 138f0573e53411fb3dc17016add0b748dfbd78ee
+  YYImage: 6db68da66f20d9f169ceb94dfb9947c3867b9665
 
-PODFILE CHECKSUM: 8642ba86015d175c306f682b1b65158c74cc30cb
+PODFILE CHECKSUM: 12d9399f7731c6a7245f61829780dca9b1cb4816
 
 COCOAPODS: 1.16.2
