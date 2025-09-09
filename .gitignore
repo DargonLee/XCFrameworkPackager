@@ -3,6 +3,7 @@
 # gitignore contributors: remember to update Global/Xcode.gitignore, Objective-C.gitignore & Swift.gitignore
 
 ## User settings
+XCFrameworkPackager.xcworkspace/xcuserdata/
 xcuserdata/
 
 ## compatibility with Xcode 8 and earlier (ignoring not required starting Xcode 9)
@@ -110,3 +111,5 @@ build/
 
 # Logs
 *.log
+XCFrameworkPackager.xcworkspace/xcuserdata/ninebot.xcuserdatad/UserInterfaceState.xcuserstate
+.DS_Store
